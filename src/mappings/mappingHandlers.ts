@@ -1,6 +1,6 @@
 import { SubstrateEvent, SubstrateBlock } from "@subql/types";
 import { AccountInfo, EventRecord } from "@polkadot/types/interfaces/system";
-import { Account, AccountSnapshot, Endowed } from "../types";
+import { AccountSnapshot } from "../types";
 
 
 class AccountInfoAtBlock {
@@ -13,7 +13,7 @@ class AccountInfoAtBlock {
 }
 export async function handleBlock(block: SubstrateBlock): Promise<void> {
   let blockNumber = block.block.header.number.toBigInt();
-  const { timestamp: createdAt } = block;
+  //const { timestamp: createdAt, block: rawBlock } = block;
   let events = block.events;
   let accounts4snapshot: string[] = [];
   for (let i = 0; i < events.length; i++) {
@@ -76,7 +76,7 @@ export async function handleBlock(block: SubstrateBlock): Promise<void> {
   }
 
   if (accounts4snapshot && accounts4snapshot.length > 0) {
-    await takeAccountSnapshot(blockNumber, accounts4snapshot, createdAt);
+    await takeAccountSnapshot(blockNumber, accounts4snapshot, block.timestamp);
   }
 }
 async function takeAccountSnapshot(
@@ -101,27 +101,9 @@ async function takeAccountSnapshot(
         freeBalance: accountInfo.freeBalance,
         reserveBalance: accountInfo.reserveBalance,
         totalBalance: accountInfo.totalBalance,
+        timestamp: timestamp
       });
       await newSnapshot.save();
-    }
-
-    let accountRecord = await Account.get(accountId);
-    if (!accountRecord) {
-      accountRecord = Account.create({
-        id: accountId,
-        atBlock: blockNumber,
-        freeBalance: accountInfo.freeBalance,
-        reserveBalance: accountInfo.reserveBalance,
-        totalBalance: accountInfo.totalBalance,
-        aid: await getID(),
-      });
-      await accountRecord.save();
-    } else {
-      accountRecord.atBlock = blockNumber;
-      accountRecord.freeBalance = accountInfo.freeBalance;
-      accountRecord.reserveBalance = accountInfo.reserveBalance;
-      accountRecord.totalBalance = accountInfo.totalBalance;
-      await accountRecord.save();
     }
   }
 }
