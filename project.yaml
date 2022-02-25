@@ -1,0 +1,24 @@
+specVersion: 0.0.1
+description: ''
+repository: ''
+schema: ./schema.graphql
+network:
+  #endpoint: wss://polkadot.api.onfinality.io/ws?apikey=e9800acf-fd32-4a24-8855-f80bca12a2fd
+  endpoint: wss://polkadot.api.onfinality.io/public-ws
+  dictionary: https://api.subquery.network/sq/subquery/dictionary-polkadot
+dataSources:
+  - name: main
+    kind: substrate/Runtime
+    startBlock: 7560558  # 7560558   7560585 7560724
+    mapping:
+      handlers:
+        - handler: handleBlock
+          kind: substrate/BlockHandler
+        # - handler: handleEvent
+        #   kind: substrate/EventHandler
+      #handlers:
+      #  - handler: handleTransfer
+      #    kind: substrate/EventHandler
+      #    filter:
+      #      module: balances
+      #      method: Transfer
