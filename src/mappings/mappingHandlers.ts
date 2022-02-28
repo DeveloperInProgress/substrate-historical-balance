@@ -62,6 +62,18 @@ export async function handleBlock(block: SubstrateBlock): Promise<void> {
         case "ReservRepatriated":
           accounts = await handleReservRepatriated(event);
           break;
+        case "Rewarded":
+          accounts = await handleRewarded(event);
+          break;
+        case "Contributed":
+          accounts = await handleContributed(event);
+          break;
+        case "Bonded":
+          accounts = await handleBonded(event);
+          break;
+        case "Unbonded":
+          accounts = await handleUnbonded(event);
+          break;
         default:
           break;
       }
@@ -272,3 +284,61 @@ export const handleReservRepatriated = async (
 
   return [sender, receiver];
 };
+
+
+export const handleRewarded = async (
+  substrateEvent: EventRecord
+): Promise<string[]> => {
+  const {event} = substrateEvent;
+  const [ stash, balance ] = event.data.toJSON() as [
+    string,
+    bigint
+  ]
+
+  logger.info(`Rewarded happened!: ${JSON.stringify(event)}`)
+
+  return [stash];
+}
+
+export const handleContributed = async (
+  substrateEvent: EventRecord
+): Promise<string[]> => {
+  const {event} = substrateEvent;
+  const [ who, fund_index, amount ] = event.data.toJSON() as [
+    string,
+    bigint,
+    bigint
+  ]
+
+  logger.info(`Contributed happened!: ${JSON.stringify(event)}`)
+
+  return [who];
+}
+
+export const handleBonded = async (
+  substrateEvent: EventRecord
+): Promise<string[]> => {
+  const {event} = substrateEvent;
+  const [ stash, amount ] = event.data.toJSON() as [
+    string,
+    bigint,
+  ]
+
+  logger.info(`Bonded happened!: ${JSON.stringify(event)}`)
+
+  return [stash];
+}
+
+export const handleUnbonded = async (
+  substrateEvent: EventRecord
+): Promise<string[]> => {
+  const {event} = substrateEvent;
+  const [ stash, amount ] = event.data.toJSON() as [
+    string,
+    bigint,
+  ]
+
+  logger.info(`Unbonded happened!: ${JSON.stringify(event)}`)
+
+  return [stash];
+}
